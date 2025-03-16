@@ -15,6 +15,10 @@ final class AppetizerListViewModel: ObservableObject {
     
     @Published var isLoading: Bool = false
     
+    @Published var isShowingDetail = false
+    
+    @Published var selectedAppetizer: Appetizer?
+    
     func getAppetizers() {
         isLoading = true
         NetworkManager.shared.getAppetizers { [self] result in
