@@ -19,7 +19,11 @@ final class NetworkManager {
     static let baseURL = "https://seanallen-course-backend.herokuapp.com/swiftui-fundamentals/"
     
     private let appetizersURL = baseURL + "appetizers"
-    
+   
+    /*
+     
+     OLD WAY - Using closures / completion handlers
+     
     func getAppetizers(completed: @escaping (Result<[Appetizer], APError>) -> Void) {
         guard let url = URL(string: appetizersURL) else {
             completed(.failure(.invalidURL))
@@ -53,6 +57,29 @@ final class NetworkManager {
         
         task.resume()
     }
+     
+     */
+    
+    func getAppetizers() async throws -> [Appetizer] {
+        guard let url = URL(string: appetizersURL) else {
+            throw APError.invalidURL
+        }
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        
+//            guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+//               
+//            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let decodedResponse = try decoder.decode(AppetizerResponse.self, from: data)
+                return decodedResponse.request
+            } catch {
+                throw APError.invalidData
+            }
+        }
     
     func downloadImage(from urlString: String, completed: @escaping (UIImage?) -> Void) {
         let cacheKey = NSString(string: urlString)
